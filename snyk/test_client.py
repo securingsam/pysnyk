@@ -119,6 +119,8 @@ class TestSnykClient(object):
                     "name": "defaultOrg",
                     "id": "689ce7f9-7943-4a71-b704-2ba575f01089",
                     "group": None,
+                    "slug": "default-org",
+                    "url": "https://api.snyk.io/org/default-org",
                 },
                 {
                     "name": "My Other Org",
@@ -127,6 +129,8 @@ class TestSnykClient(object):
                         "name": "ACME Inc.",
                         "id": "a060a49f-636e-480f-9e14-38e773b2a97f",
                     },
+                    "slug": "my-other-org",
+                    "url": "https://api.snyk.io/org/my-other-org",
                 },
             ]
         }
@@ -145,7 +149,12 @@ class TestSnykClient(object):
                     "isMonitored": "true",
                     "testFrequency": "daily",
                     "totalDependencies": 438,
-                    "issueCountsBySeverity": {"low": 8, "high": 13, "medium": 15},
+                    "issueCountsBySeverity": {
+                        "critical": 1,
+                        "low": 8,
+                        "high": 13,
+                        "medium": 15,
+                    },
                     "lastTestedDate": "2019-02-05T06:21:00.000Z",
                     "browseUrl": "https://app.snyk.io/org/pysnyk-test-org/project/6d5813be-7e6d-4ab8-80c2-1e3e2a454545",
                 }

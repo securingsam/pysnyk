@@ -11,7 +11,10 @@ class TestModels(object):
     @pytest.fixture
     def organization(self):
         org = Organization(
-            name="My Other Org", id="a04d9cbd-ae6e-44af-b573-0556b0ad4bd2"
+            name="My Other Org",
+            id="a04d9cbd-ae6e-44af-b573-0556b0ad4bd2",
+            slug="my-other-org",
+            url="https://api.snyk.io/org/my-other-org",
         )
         org.client = SnykClient("token")
         return org
@@ -44,7 +47,12 @@ class TestOrganization(TestModels):
             "testFrequency": "daily",
             "isMonitored": "true",
             "totalDependencies": 438,
-            "issueCountsBySeverity": {"low": 8, "high": 13, "medium": 15},
+            "issueCountsBySeverity": {
+                "critical": 1,
+                "low": 8,
+                "high": 13,
+                "medium": 15,
+            },
             "lastTestedDate": "2019-02-05T06:21:00.000Z",
             "browseUrl": "https://app.snyk.io/org/pysnyk-test-org/project/6d5813be-7e6d-4ab8-80c2-1e3e2a454545",
             "tags": [{"key": "some-key", "value": "some-value"}],
@@ -325,7 +333,7 @@ class TestProject(TestModels):
             isMonitored="true",
             testFrequency="daily",
             totalDependencies=438,
-            issueCountsBySeverity={"low": 8, "high": 13, "medium": 15},
+            issueCountsBySeverity={"critical": 1, "low": 8, "high": 13, "medium": 15},
             lastTestedDate="2019-02-05T06:21:00.000Z",
             browseUrl="https://app.snyk.io/org/pysnyk-test-org/project/6d5813be-7e6d-4ab8-80c2-1e3e2a454545",
             organization=organization,
@@ -343,6 +351,24 @@ class TestProject(TestModels):
         requests_mock.delete(project_url, status_code=500)
         with pytest.raises(SnykError):
             project.delete()
+
+    def test_activate(self, project, project_url, requests_mock):
+        requests_mock.post("%s/activate" % project_url, json={})
+        assert project.activate()
+
+    def test_failed_activate(self, project, project_url, requests_mock):
+        requests_mock.post("%s/activate" % project_url, status_code=500, json={})
+        with pytest.raises(SnykError):
+            project.activate()
+
+    def test_deactivate(self, project, project_url, requests_mock):
+        requests_mock.post("%s/deactivate" % project_url, json={})
+        assert project.deactivate()
+
+    def test_failed_deactivate(self, project, project_url, requests_mock):
+        requests_mock.post("%s/deactivate" % project_url, status_code=500, json={})
+        with pytest.raises(SnykError):
+            project.deactivate()
 
     def test_add_tag(self, project, project_url, requests_mock):
         requests_mock.post(

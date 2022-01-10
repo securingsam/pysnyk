@@ -125,6 +125,8 @@ class OrganizationGroup(DataClassJSONMixin):
 class Organization(DataClassJSONMixin):
     name: str
     id: str
+    slug: str
+    url: str
     group: Optional[OrganizationGroup] = None
     client: InitVar[Optional[Any]] = None  # type: ignore
 
@@ -413,8 +415,10 @@ class Member(DataClassJSONMixin):
 @dataclass
 class IssueCounts(DataClassJSONMixin):
     low: int
-    high: int
     medium: int
+    high: int
+    # https://updates.snyk.io/critical-severity-level-195891, critical severity is optional since it is still under Snyk preview
+    critical: Optional[int] = 0
 
 
 @dataclass
@@ -507,6 +511,14 @@ class Project(DataClassJSONMixin):
     def delete(self) -> bool:
         path = "org/%s/project/%s" % (self.organization.id, self.id)
         return bool(self.organization.client.delete(path))
+
+    def activate(self) -> bool:
+        path = "org/%s/project/%s/activate" % (self.organization.id, self.id)
+        return bool(self.organization.client.post(path, {}))
+
+    def deactivate(self) -> bool:
+        path = "org/%s/project/%s/deactivate" % (self.organization.id, self.id)
+        return bool(self.organization.client.post(path, {}))
 
     @property
     def settings(self) -> Manager:
