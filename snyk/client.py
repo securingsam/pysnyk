@@ -7,7 +7,7 @@ from retry.api import retry_call  # type: ignore
 from .__version__ import __version__
 from .errors import SnykHTTPError, SnykNotImplementedError
 from .managers import Manager
-from .models import Organization, Project
+from .models import Organization, Project, IssueSetAggregated
 
 logger = logging.getLogger(__name__)
 
@@ -129,4 +129,5 @@ class SnykClient(object):
 
     # https://snyk.docs.apiary.io/#reference/reporting-api/issues/get-list-of-issues
     def issues(self):
-        raise SnykNotImplementedError  # pragma: no cover
+        return Manager.factory(IssueSetAggregated, self)
+        #raise SnykNotImplementedError  # pragma: no cover
